@@ -45,7 +45,20 @@ struct IDSelectorRange : IDSelector {
 
     ~IDSelectorRange() override {}
 };
-
+struct CategorialSelector : public IDSelector {
+    std::unordered_set<idx_t> allowed_ids;
+    
+    // NEW: Accept a raw C++ memory pointer and size, exactly like Meta does!
+    CategorialSelector(size_t n, const idx_t* authorized_docs) {
+        for(size_t i = 0; i < n; i++) {
+            allowed_ids.insert(authorized_docs[i]); // Dereference the pointer
+        }
+    }
+    
+    bool is_member(idx_t id) const override {
+        return allowed_ids.find(id) != allowed_ids.end();
+    }
+};
 /** Simple array of elements
  *
  * is_member calls are very inefficient, but some operations can use the ids
